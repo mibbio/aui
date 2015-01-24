@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 # Run this script after your first boot with archlinux (as root)
 
-if [[ -f `pwd`/sharedfuncs ]]; then
+if [[ -f $(pwd)/sharedfuncs ]]; then
   source sharedfuncs
 else
   echo "missing file: sharedfuncs"
@@ -54,49 +54,49 @@ welcome(){
 language_selector(){
   #AUTOMATICALLY DETECTS THE SYSTEM LOCALE {{{
   #automatically detects the system language based on your locale
-  LOCALE=`locale | grep LANG | sed 's/LANG=//' | cut -c1-5`
+  LOCALE=$(locale | grep LANG | sed 's/LANG=//' | cut -c1-5)
   #KDE #{{{
   if [[ $LOCALE == pt_BR || $LOCALE == en_GB || $LOCALE == zh_CN ]]; then
-    LOCALE_KDE=`echo $LOCALE | tr '[:upper:]' '[:lower:]'`
+    LOCALE_KDE=$(echo $LOCALE | tr '[:upper:]' '[:lower:]')
   elif [[ $LOCALE == en_US ]]; then
     LOCALE_KDE="en_gb"
   else
-    LOCALE_KDE=`echo $LOCALE | cut -d\_ -f1`
+    LOCALE_KDE=$(echo $LOCALE | cut -d\_ -f1)
   fi
   #}}}
   #FIREFOX #{{{
   if [[ $LOCALE == pt_BR || $LOCALE == pt_PT || $LOCALE == en_GB || $LOCALE == en_US || $LOCALE == es_AR || $LOCALE == es_CL || $LOCALE == es_ES || $LOCALE == zh_CN ]]; then
-    LOCALE_FF=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+    LOCALE_FF=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
   else
-    LOCALE_FF=`echo $LOCALE | cut -d\_ -f1`
+    LOCALE_FF=$(echo $LOCALE | cut -d\_ -f1)
   fi
   #}}}
   #THUNDERBIRD #{{{
   if [[ $LOCALE == pt_BR || $LOCALE == pt_PT || $LOCALE == en_US || $LOCALE == en_GB || $LOCALE == es_AR || $LOCALE == es_ES || $LOCALE == zh_CN ]]; then
-    LOCALE_TB=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+    LOCALE_TB=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
   elif [[ $LOCALE == es_CL ]]; then
     LOCALE_TB="es-es"
   else
-    LOCALE_TB=`echo $LOCALE | cut -d\_ -f1`
+    LOCALE_TB=$(echo $LOCALE | cut -d\_ -f1)
   fi
   #}}}
   #HUNSPELL #{{{
   if [[ $LOCALE == pt_BR ]]; then
-    LOCALE_HS=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+    LOCALE_HS=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
   elif [[ $LOCALE == pt_PT ]]; then
     LOCALE_HS="pt_pt"
   else
-    LOCALE_HS=`echo $LOCALE | cut -d\_ -f1`
+    LOCALE_HS=$(echo $LOCALE | cut -d\_ -f1)
   fi
   #}}}
   #ASPELL #{{{
-  LOCALE_AS=`echo $LOCALE | cut -d\_ -f1`
+  LOCALE_AS=$(echo $LOCALE | cut -d\_ -f1)
   #}}}
   #LIBREOFFICE #{{{
   if [[ $LOCALE == pt_BR || $LOCALE == en_GB || $LOCALE == en_US || $LOCALE == zh_CN ]]; then
-    LOCALE_LO=`echo $LOCALE | sed 's/_/-/'`
+    LOCALE_LO=$(echo $LOCALE | sed 's/_/-/')
   else
-    LOCALE_LO=`echo $LOCALE | cut -d\_ -f1`
+    LOCALE_LO=$(echo $LOCALE | cut -d\_ -f1)
   fi
   #}}}
   #}}}
@@ -114,46 +114,46 @@ language_selector(){
       localectl set-locale LANG=${LOCALE_UTF8}
       #KDE #{{{
       if [[ $LOCALE == pt_BR || $LOCALE == en_GB || $LOCALE == zh_CN ]]; then
-        LOCALE_KDE=`echo $LOCALE | tr '[:upper:]' '[:lower:]'`
+        LOCALE_KDE=$(echo $LOCALE | tr '[:upper:]' '[:lower:]')
       elif [[ $LOCALE == en_US ]]; then
         LOCALE_KDE="en_gb"
       else
-        LOCALE_KDE=`echo $LOCALE | cut -d\_ -f1`
+        LOCALE_KDE=$(echo $LOCALE | cut -d\_ -f1)
       fi
       #}}}
       #FIREFOX #{{{
       if [[ $LOCALE == pt_BR || $LOCALE == pt_PT || $LOCALE == en_GB || $LOCALE == en_US || $LOCALE == es_AR || $LOCALE == es_CL || $LOCALE == es_ES || $LOCALE == zh_CN ]]; then
-        LOCALE_FF=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+        LOCALE_FF=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
       else
-        LOCALE_FF=`echo $LOCALE | cut -d\_ -f1`
+        LOCALE_FF=$(echo $LOCALE | cut -d\_ -f1)
       fi
       #}}}
       #THUNDERBIRD #{{{
       if [[ $LOCALE == pt_BR || $LOCALE == pt_PT || $LOCALE == en_US || $LOCALE == en_GB || $LOCALE == es_AR || $LOCALE == es_ES || $LOCALE == zh_CN ]]; then
-        LOCALE_TB=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+        LOCALE_TB=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
       elif [[ $LOCALE == es_CL ]]; then
         LOCALE_TB="es-es"
       else
-        LOCALE_TB=`echo $LOCALE | cut -d\_ -f1`
+        LOCALE_TB=$(echo $LOCALE | cut -d\_ -f1)
       fi
       #}}}
       #HUNSPELL #{{{
       if [[ $LOCALE == pt_BR ]]; then
-        LOCALE_HS=`echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/'`
+        LOCALE_HS=$(echo $LOCALE | tr '[:upper:]' '[:lower:]' | sed 's/_/-/')
       elif [[ $LOCALE == pt_PT ]]; then
         LOCALE_HS="pt_pt"
       else
-        LOCALE_HS=`echo $LOCALE | cut -d\_ -f1`
+        LOCALE_HS=$(echo $LOCALE | cut -d\_ -f1)
       fi
       #}}}
       #ASPELL #{{{
-      LOCALE_AS=`echo $LOCALE | cut -d\_ -f1`
+      LOCALE_AS=$(echo $LOCALE | cut -d\_ -f1)
       #}}}
       #LIBREOFFICE #{{{
       if [[ $LOCALE == pt_BR || $LOCALE == en_GB || $LOCALE == en_US || $LOCALE == zh_CN ]]; then
-        LOCALE_LO=`echo $LOCALE | sed 's/_/-/'`
+        LOCALE_LO=$(echo $LOCALE | sed 's/_/-/')
       else
-        LOCALE_LO=`echo $LOCALE | cut -d\_ -f1`
+        LOCALE_LO=$(echo $LOCALE | cut -d\_ -f1)
       fi
       #}}}
       ;;
@@ -167,7 +167,7 @@ select_user(){
   #CREATE NEW USER {{{
   create_new_user(){
     read -p "Username: " username
-    username=`echo $username | tr '[:upper:]' '[:lower:]'`
+    username=$(echo $username | tr '[:upper:]' '[:lower:]')
     useradd -m -g users -G wheel -s /bin/bash ${username}
     chfn ${username}
     passwd ${username}
@@ -272,7 +272,7 @@ select_user(){
   }
   #}}}
   print_title "SELECT/CREATE USER - https://wiki.archlinux.org/index.php/Users_and_Groups"
-  users_list=(`cat /etc/passwd | grep "/home" | cut -d: -f1`);
+  users_list=($(cat /etc/passwd | grep "/home" | cut -d: -f1));
   PS3="$prompt1"
   echo "Avaliable Users:"
   if [[ $(( ${#users_list[@]} )) -gt 0 ]]; then
@@ -538,7 +538,7 @@ install_samba(){
   if [[ $OPTION == y ]]; then
     package_install "samba smbnetfs"
     [[ ! -f /etc/samba/smb.conf ]] && cp /etc/samba/smb.conf.default /etc/samba/smb.conf
-    local CONFIG_SAMBA=`cat /etc/samba/smb.conf | grep usershare`
+    local CONFIG_SAMBA=$(cat /etc/samba/smb.conf | grep usershare)
     if [[ -z $CONFIG_SAMBA ]]; then
       # configure usershare
       export USERSHARES_DIR="/var/lib/samba/usershare"
@@ -2044,7 +2044,7 @@ install_system_apps(){
           ;;
         8)
           #Make sure we are not a VirtualBox Guest
-          VIRTUALBOX_GUEST=`dmidecode --type 1 | grep VirtualBox`
+          VIRTUALBOX_GUEST=$(dmidecode --type 1 | grep VirtualBox)
           if [[ -z ${VIRTUALBOX_GUEST} ]]; then
             package_install "virtualbox virtualbox-host-modules virtualbox-guest-iso"
             aur_package_install "virtualbox-ext-oracle"
@@ -3492,7 +3492,7 @@ install_games(){
 install_web_server(){
   install_adminer(){ #{{{
     aur_package_install "adminer"
-    local ADMINER=`cat /etc/httpd/conf/httpd.conf | grep Adminer`
+    local ADMINER=$(cat /etc/httpd/conf/httpd.conf | grep Adminer)
     [[ -z $ADMINER ]] && echo -e '\n# Adminer Configuration\nInclude conf/extra/httpd-adminer.conf' >> /etc/httpd/conf/httpd.conf
   } #}}}
   install_mariadb(){ #{{{
@@ -3546,7 +3546,7 @@ install_web_server(){
       rm -v /etc/httpd/conf/httpd.conf.aui
     fi
     [[ -f /etc/httpd/conf/httpd.conf.aui ]] && echo "/etc/httpd/conf/httpd.conf.aui" || cp -v /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.aui
-    local IS_DISABLED=`cat /etc/httpd/conf/httpd.conf | grep php5_module.conf`
+    local IS_DISABLED=$(cat /etc/httpd/conf/httpd.conf | grep php5_module.conf)
     if [[ -z $IS_DISABLED ]]; then
       echo -e 'application/x-httpd-php5                php php5' >> /etc/httpd/conf/mime.types
       sed -i '/LoadModule dir_module modules\/mod_dir.so/a\LoadModule php5_module modules\/libphp5.so' /etc/httpd/conf/httpd.conf

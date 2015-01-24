@@ -65,14 +65,14 @@
     BOOT_MOUNTPOINT="/dev/sda"
     MOUNTPOINT="/mnt"
   #}}}
-  ARCHI=`uname -m` # ARCHITECTURE
+  ARCHI=$(uname -m) # ARCHITECTURE
   UEFI=0
   LVM=0
   LUKS=0
   LUKS_DISK="sda2"
-  AUR=`echo -e "(${BPurple}aur${Reset})"`
-  EXTERNAL=`echo -e "(${BYellow}external${Reset})"`
-  AUI_DIR=`pwd` #CURRENT DIRECTORY
+  AUR=$(echo -e "(${BPurple}aur${Reset})")
+  EXTERNAL=$(echo -e "(${BYellow}external${Reset})")
+  AUI_DIR=$(pwd) #CURRENT DIRECTORY
   [[ $1 == -v || $1 == --verbose ]] && VERBOSE_MODE=1 || VERBOSE_MODE=0 # VERBOSE MODE
   LOG="${AUI_DIR}/`basename ${0}`_error.log" # LOG FILE
   [[ -f $LOG ]] && rm -f $LOG
@@ -167,7 +167,7 @@
     fi
   } #}}}
   check_hostname() { #{{{
-    if [[ `echo ${HOSTNAME} | sed 's/ //g'` == "" ]]; then
+    if [[ $(echo ${HOSTNAME} | sed 's/ //g') == "" ]]; then
       error_msg "ERROR! Hostname is not configured."
     fi
   } #}}}
@@ -177,11 +177,11 @@
     fi
   } #}}}
   check_domainname() { #{{{
-    local _domainname=`echo ${HOSTNAME} | cut -d'.' -f2- | sed 's/ //g'`
+    local _domainname=$(echo ${HOSTNAME} | cut -d'.' -f2- | sed 's/ //g')
 
     # no domain name. Keep looking...
     if [[ "${_domainname}" == "" ]]; then
-      _domainname=`grep domain /etc/resolv.conf | sed 's/domain //g' | sed 's/ //g'`
+      _domainname=$(grep domain /etc/resolv.conf | sed 's/domain //g' | sed 's/ //g')
     fi
 
     # not founded...
@@ -192,10 +192,10 @@
   check_connection(){ #{{{
     XPINGS=$(( $XPINGS + 1 ))
     connection_test() {
-      ping -q -w 1 -c 1 `ip r | grep default | awk 'NR==1 {print $3}'` &> /dev/null && return 1 || return 0
+      ping -q -w 1 -c 1 $(ip r | grep default | awk 'NR==1 {print $3}') &> /dev/null && return 1 || return 0
     }
-    WIRED_DEV=`ip link | grep "en\|eth" | awk '{print $2}'| sed 's/://' | sed '1!d'`
-    WIRELESS_DEV=`ip link | grep wl | awk '{print $2}'| sed 's/://' | sed '1!d'`
+    WIRED_DEV=$(ip link | grep "en\|eth" | awk '{print $2}'| sed 's/://' | sed '1!d')
+    WIRELESS_DEV=$(ip link | grep wl | awk '{print $2}'| sed 's/://' | sed '1!d')
     if connection_test; then
       print_warning "ERROR! Connection not Found."
       print_info "Network Setup"
@@ -249,8 +249,8 @@
   check_vga() { #{{{
     # Determine video chipset - only Intel, ATI and nvidia are supported by this script
     ncecho " ${BBlue}[${Reset}${Bold}X${BBlue}]${Reset} Detecting video chipset "
-    local _vga=`lspci | grep VGA | tr "[:upper:]" "[:lower:]"`
-    local _vga_length=`lspci | grep VGA | wc -l`
+    local _vga=$(lspci | grep VGA | tr "[:upper:]" "[:lower:]")
+    local _vga_length=$(lspci | grep VGA | wc -l)
 
     if [[ -n $(dmidecode --type 1 | grep VirtualBox) ]]; then
       cecho Virtualbox
@@ -301,7 +301,7 @@
       read -p "$1 [y/N]: " OPTION
       echo ""
     fi
-    OPTION=`echo "$OPTION" | tr '[:upper:]' '[:lower:]'`
+    OPTION=$(echo "$OPTION" | tr '[:upper:]' '[:lower:]')
   } #}}}
   read_input_options() { #{{{
     local line
@@ -335,15 +335,15 @@
   } #}}}
   print_info() { #{{{
     #Console width number
-    T_COLS=`tput cols`
+    T_COLS=$(tput cols)
     echo -e "${Bold}$1${Reset}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
   } #}}}
   print_warning() { #{{{
-    T_COLS=`tput cols`
+    T_COLS=$(tput cols)
     echo -e "${BYellow}$1${Reset}\n" | fold -sw $(( $T_COLS - 1 ))
   } #}}}
   print_danger() { #{{{
-    T_COLS=`tput cols`
+    T_COLS=$(tput cols)
     echo -e "${BRed}$1${Reset}\n" | fold -sw $(( $T_COLS - 1 ))
   } #}}}
   start_module() { #{{{
@@ -353,7 +353,7 @@
     for module in $1; do
       #check if the name of the module can be the same of the module or the given name
       [[ $# -lt 2 ]] && local _module_name="$module" || local _module_name="$2"
-      local _is_disabled=`cat /etc/modules-load.d/${_module_name}.conf | grep $module &> /dev/null`
+      local _is_disabled=$(cat /etc/modules-load.d/${_module_name}.conf | grep $module &> /dev/null)
       [[ -z $_is_disabled ]] && echo "$module" >> /etc/modules-load.d/${_module_name}.conf
       start_module "$module"
     done
@@ -363,7 +363,7 @@
     local _url=${2}
     [[ -n ${3} ]] && local _siglevel="\nSigLevel = ${3}" || local _siglevel=""
 
-    local _check_repo=`grep -F "${_repo}" /etc/pacman.conf`
+    local _check_repo=$(grep -F "${_repo}" /etc/pacman.conf)
     if [[ -z $_check_repo ]]; then
       echo -e "\n[${_repo}]${_siglevel}\nServer = ${_url}" >> /etc/pacman.conf
       system_update
@@ -372,7 +372,7 @@
   check_multilib(){ #{{{
     # this option will avoid any problem with packages install
     if [[ $ARCHI == x86_64 ]]; then
-      local _has_multilib=`grep -n "\[multilib\]" /etc/pacman.conf | cut -f1 -d:`
+      local _has_multilib=$(grep -n "\[multilib\]" /etc/pacman.conf | cut -f1 -d:)
       if [[ -z $_has_multilib ]]; then
         echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
         echo -e '\nMultilib repository added into pacman.conf file'
@@ -403,14 +403,14 @@
     local _add_line=${1}
     local _filepath=${2}
 
-    local _has_line=`grep -ci "${_add_line}" ${_filepath} &> /dev/null`
+    local _has_line=$(grep -ci "${_add_line}" ${_filepath} &> /dev/null)
     [[ $_has_line -eq 0 ]] && echo "${_add_line}" >> ${_filepath}
   } #}}}
   replace_line() { #{{{
     local _search=${1}
     local _replace=${2}
     local _filepath=${3}
-    local _filebase=`basename ${3}`
+    local _filebase=$(basename ${3})
 
     sed -e "s/${_search}/${_replace}/" ${_filepath} > /tmp/${_filebase} 2>"$LOG"
     if [[ ${?} -eq 0 ]]; then
@@ -421,11 +421,11 @@
   } #}}}
   update_early_modules() { #{{{
     local _new_module=${1}
-    local _current_modules=`egrep ^MODULES= /etc/mkinitcpio.conf`
+    local _current_modules=$(egrep ^MODULES= /etc/mkinitcpio.conf)
 
     if [[ -n ${_new_module} ]]; then
       # Determine if the new module is already listed.
-      local _exists=`echo ${_current_modules} | grep ${_new_module}`
+      local _exists=$(echo ${_current_modules} | grep ${_new_module})
       if [ $? -eq 1 ]; then
 
         source /etc/mkinitcpio.conf
@@ -495,7 +495,7 @@
     #install packages using pacman
     if [[ $AUTOMATIC_MODE -eq 1 || $VERBOSE_MODE -eq 0 ]]; then
       for PKG in ${1}; do
-        local _pkg_repo=`pacman -Sp --print-format %r ${PKG} | uniq | sed '1!d'`
+        local _pkg_repo=$(pacman -Sp --print-format %r ${PKG} | uniq | sed '1!d')
         case $_pkg_repo in
           "core")
             _pkg_repo="${BRed}${_pkg_repo}${Reset}"
@@ -576,7 +576,7 @@
     #list of chars to remove from the package name
     local _chars=("Ttf-" "-bzr" "-hg" "-svn" "-git" "-stable" "-icon-theme" "Gnome-shell-theme-" "Gnome-shell-extension-");
     #remove chars from package name
-    for char in ${_chars[@]}; do _package_name=`echo ${_package_name^} | sed 's/'$char'//'`; done
+    for char in ${_chars[@]}; do _package_name=$(echo ${_package_name^} | sed 's/'$char'//'); done
     #display checkbox and package name
     echo -e "$(checkbox_package "$1") ${Bold}${_package_name}${Reset}"
   } #}}}
@@ -611,7 +611,7 @@
   }
   #}}}
   getkeymap() { #{{{
-    local _keymaps=(`localectl list-keymaps`)
+    local _keymaps=($(localectl list-keymaps))
     PS3="(shift+pgup/pgdown) $prompt1"
     echo "Select keymap:"
     select KEYMAP in "${_keymaps[@]}"; do
@@ -624,7 +624,7 @@
   }
   #}}}
   setlocale() { #{{{
-    local _locale_list=(`cat /etc/locale.gen | grep UTF-8 | sed 's/\..*$//' | sed '/@/d' | awk '{print $1}' | uniq | sed 's/#//g'`);
+    local _locale_list=($(cat /etc/locale.gen | grep UTF-8 | sed 's/\..*$//' | sed '/@/d' | awk '{print $1}' | uniq | sed 's/#//g'));
     PS3="$prompt1"
     echo "Select locale:"
     select LOCALE in "${_locale_list[@]}"; do
@@ -638,12 +638,12 @@
   }
   #}}}
   settimezone() { #{{{
-    local _zones=(`timedatectl list-timezones | sed 's/\/.*$//' | uniq`)
+    local _zones=($(timedatectl list-timezones | sed 's/\/.*$//' | uniq))
     PS3="$prompt1"
     echo "Select zone:"
     select ZONE in "${_zones[@]}"; do
       if contains_element "$ZONE" "${_zones[@]}"; then
-        local _subzones=(`timedatectl list-timezones | grep ${ZONE} | sed 's/^.*\///'`)
+        local _subzones=($(timedatectl list-timezones | grep ${ZONE} | sed 's/^.*\///'))
         PS3="$prompt1"
         echo "Select subzone:"
         select SUBZONE in "${_subzones[@]}"; do

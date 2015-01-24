@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------------------
 # Run this script after your first boot with archlinux (as root)
 
-if [[ -f `pwd`/sharedfuncs ]]; then
+if [[ -f $(pwd)/sharedfuncs ]]; then
   source sharedfuncs
 else
   echo "missing file: sharedfuncs"
@@ -58,7 +58,7 @@ configure_mirrorlist(){
   local countries_code=("AU" "AT" "BY" "BE" "BR" "BG" "CA" "CL" "CN" "CO" "CZ" "DK" "EE" "FI" "FR" "DE" "GR" "HU" "IN" "IE" "IL" "IT" "JP" "KZ" "KR" "LV" "LU" "MK" "NL" "NC" "NZ" "NO" "PL" "PT" "RO" "RU" "RS" "SG" "SK" "ZA" "ES" "LK" "SE" "CH" "TW" "TR" "UA" "GB" "US" "UZ" "VN")
   local countries_name=("Australia" "Austria" "Belarus" "Belgium" "Brazil" "Bulgaria" "Canada" "Chile" "China" "Colombia" "Czech Republic" "Denmark" "Estonia" "Finland" "France" "Germany" "Greece" "Hungary" "India" "Ireland" "Israel" "Italy" "Japan" "Kazakhstan" "Korea" "Latvia" "Luxembourg" "Macedonia" "Netherlands" "New Caledonia" "New Zealand" "Norway" "Poland" "Portugal" "Romania" "Russian" "Serbia" "Singapore" "Slovakia" "South Africa" "Spain" "Sri Lanka" "Sweden" "Switzerland" "Taiwan" "Turkey" "Ukraine" "United Kingdom" "United States" "Uzbekistan" "Viet Nam")
   country_list(){
-    #`reflector --list-countries | sed 's/[0-9]//g' | sed 's/^/"/g' | sed 's/,.*//g' | sed 's/ *$//g'  | sed 's/$/"/g' | sed -e :a -e '$!N; s/\n/ /; ta'`
+    #$(reflector --list-countries | sed 's/[0-9]//g' | sed 's/^/"/g' | sed 's/,.*//g' | sed 's/ *$//g'  | sed 's/$/"/g' | sed -e :a -e '$!N; s/\n/ /; ta')
     PS3="$prompt1"
     echo "Select your country:"
     select country_name in "${countries_name[@]}"; do
@@ -106,7 +106,7 @@ configure_mirrorlist(){
 #}}}
 #UMOUNT PARTITIONS {{{
 umount_partitions(){
-  mounted_partitions=(`lsblk | grep ${MOUNTPOINT} | awk '{print $7}' | sort -r`)
+  mounted_partitions=($(lsblk | grep ${MOUNTPOINT} | awk '{print $7}' | sort -r))
   swapoff -a
   for i in ${mounted_partitions[@]}; do
     umount $i
@@ -115,7 +115,7 @@ umount_partitions(){
 #}}}
 #SELECT DEVICE {{{
 select_device(){
-  devices_list=(`lsblk -d | awk '{print "/dev/" $1}' | grep 'sd\|hd\|vd'`);
+  devices_list=($(lsblk -d | awk '{print "/dev/" $1}' | grep 'sd\|hd\|vd'));
   PS3="$prompt1"
   echo -e "Select partition:\n"
   select device in "${devices_list[@]}"; do
@@ -193,7 +193,7 @@ setup_luks(){
   print_title "LUKS - https://wiki.archlinux.org/index.php/LUKS"
   print_info "The Linux Unified Key Setup or LUKS is a disk-encryption specification created by Clemens Fruhwirth and originally intended for Linux."
   print_danger "\tDo not use this for boot partitions"
-  block_list=(`lsblk | grep 'part' | awk '{print "/dev/" substr($1,3)}'`)
+  block_list=($(lsblk | grep 'part' | awk '{print "/dev/" substr($1,3)}'))
   PS3="$prompt1"
   echo -e "Select partition:"
   select OPT in "${block_list[@]}"; do
@@ -201,7 +201,7 @@ setup_luks(){
       cryptsetup --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random --verify-passphrase luksFormat $OPT
       cryptsetup open --type luks $([[ $TRIM -eq 1 ]] && echo "--allow-discards") $OPT crypt
       LUKS=1
-      LUKS_DISK=`echo ${OPT} | sed 's/\/dev\///'`
+      LUKS_DISK=$(echo ${OPT} | sed 's/\/dev\///')
       break
     elif [[ $OPT == "Cancel" ]]; then
       break
@@ -220,7 +220,7 @@ setup_lvm(){
     pvcreate /dev/mapper/crypt
     vgcreate lvm /dev/mapper/crypt
   else
-    block_list=(`lsblk | grep 'part' | awk '{print "/dev/" substr($1,3)}'`)
+    block_list=($(lsblk | grep 'part' | awk '{print "/dev/" substr($1,3)}'))
     PS3="$prompt1"
     echo -e "Select partition:"
     select OPT in "${block_list[@]}"; do
@@ -255,7 +255,7 @@ format_partitions(){
   print_danger "\tAll data on the ROOT and SWAP partition will be LOST."
   i=0
 
-  block_list=(`lsblk | grep 'part\|lvm' | awk '{print substr($1,3)}'`)
+  block_list=($(lsblk | grep 'part\|lvm' | awk '{print substr($1,3)}'))
 
   # check if there is no partition
   if [[ ${#block_list[@]} -eq 0 ]]; then
@@ -265,7 +265,7 @@ format_partitions(){
 
   partitions_list=()
   for OPT in ${block_list[@]}; do
-    check_lvm=`echo $OPT | grep lvm`
+    check_lvm=$(echo $OPT | grep lvm)
     if [[ -z $check_lvm ]]; then
       partitions_list+=("/dev/$OPT")
     else
@@ -344,7 +344,7 @@ format_partitions(){
           break
           ;;
         2)
-          total_memory=`grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//'`
+          total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
           fallocate -l ${total_memory}M ${MOUNTPOINT}/swapfile
           chmod 600 ${MOUNTPOINT}/swapfile
           mkswap ${MOUNTPOINT}/swapfile
@@ -397,7 +397,7 @@ format_partitions(){
         if contains_element "${partition}" "${partitions_list[@]}"; then
           case ${partition_name[i]} in
             root)
-              ROOT_PART=`echo ${partition} | sed 's/\/dev\/mapper\///' | sed 's/\/dev\///'`
+              ROOT_PART=$(echo ${partition} | sed 's/\/dev\/mapper\///' | sed 's/\/dev\///')
               ROOT_MOUNTPOINT=${partition}
               format_partition "${partition}" "${MOUNTPOINT}"
               ;;
@@ -414,7 +414,7 @@ format_partitions(){
               ;;
             another)
               read -p "Mountpoint [ex: /home]:" directory
-              [[ $directory == "/boot" ]] && BOOT_MOUNTPOINT=`echo ${partition} | sed 's/[0-9]//'`
+              [[ $directory == "/boot" ]] && BOOT_MOUNTPOINT=$(echo ${partition} | sed 's/[0-9]//')
               select_filesystem
               read_input_text "Format ${partition} partition"
               if [[ $OPTION == y ]]; then
@@ -452,13 +452,13 @@ install_base_system(){
   print_info "Using the pacstrap script we install the base system. The base-devel package group will be installed also."
   pacstrap ${MOUNTPOINT} base base-devel parted btrfs-progs ntp
   [[ $? -ne 0 ]] && error_msg "Installing base system to ${MOUNTPOINT} failed. Check error messages above."
-  local PTABLE=`parted -l | grep "gpt"`
+  local PTABLE=$(parted -l | grep "gpt")
   [[ -n $PTABLE ]] && pacstrap ${MOUNTPOINT} gptfdisk
-  WIRELESS_DEV=`ip link | grep wlp | awk '{print $2}'| sed 's/://' | sed '1!d'`
+  WIRELESS_DEV=$(ip link | grep wlp | awk '{print $2}'| sed 's/://' | sed '1!d')
   if [[ -n $WIRELESS_DEV ]]; then
     pacstrap ${MOUNTPOINT} iw wireless_tools wpa_actiond wpa_supplicant dialog
   fi
-  WIRED_DEV=`ip link | grep "eno\|enp" | awk '{print $2}'| sed 's/://' | sed '1!d'`
+  WIRED_DEV=$(ip link | grep "eno\|enp" | awk '{print $2}'| sed 's/://' | sed '1!d')
   if [[-n $WIRED_DEV ]]; then
     arch_chroot "systemctl enable dhcpcd@${WIRED_DEV}"
   fi
@@ -710,7 +710,7 @@ configure_bootloader(){
           1)
             arch_chroot "gummiboot --path=${EFI_MOUNTPOINT} install"
             print_warning "Please check your .conf file"
-            partuuid=`blkid -s PARTUUID ${ROOT_MOUNTPOINT} | awk '{print $2}' | sed 's/"//g' | sed 's/^.*=//'`
+            partuuid=$(blkid -s PARTUUID ${ROOT_MOUNTPOINT} | awk '{print $2}' | sed 's/"//g' | sed 's/^.*=//')
             if [[ $LUKS -eq 1 ]]; then
               echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\tcryptdevice=\/dev\/${LUKS_DISK}:luks root=\/dev\/mapper\/${ROOT_PART} rw" > ${MOUNTPOINT}/boot/loader/entries/arch.conf
             elif [[ $LVM -eq 1 ]]; then
@@ -751,7 +751,7 @@ finish(){
   print_title "INSTALL COMPLETED"
   #COPY AUI TO ROOT FOLDER IN THE NEW SYSTEM
   print_warning "\nA copy of the AUI will be placed in /root directory of your new system"
-  cp -R `pwd` ${MOUNTPOINT}/root
+  cp -R $(pwd) ${MOUNTPOINT}/root
   read_input_text "Reboot system"
   if [[ $OPTION == y ]]; then
     umount_partitions
