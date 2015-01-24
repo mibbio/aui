@@ -454,11 +454,11 @@ install_base_system(){
   [[ $? -ne 0 ]] && error_msg "Installing base system to ${MOUNTPOINT} failed. Check error messages above."
   local PTABLE=$(parted -l | grep "gpt")
   [[ -n $PTABLE ]] && pacstrap ${MOUNTPOINT} gptfdisk
-  WIRELESS_DEV=$(ip link | grep wlp | awk '{print $2}'| sed 's/://' | sed '1!d')
+  WIRELESS_DEV=$(ip link | grep wl | awk '{print $2}'| sed 's/://' | sed '1!d')
   if [[ -n $WIRELESS_DEV ]]; then
     pacstrap ${MOUNTPOINT} iw wireless_tools wpa_actiond wpa_supplicant dialog
   fi
-  WIRED_DEV=$(ip link | grep "eno\|enp" | awk '{print $2}'| sed 's/://' | sed '1!d')
+  WIRED_DEV=$(ip link | grep "en\|eth" | awk '{print $2}'| sed 's/://' | sed '1!d')
   if [[-n $WIRED_DEV ]]; then
     arch_chroot "systemctl enable dhcpcd@${WIRED_DEV}"
   fi
