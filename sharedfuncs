@@ -152,12 +152,12 @@
   }
   #}}}
   check_root() { #{{{
-    if [[ "$(id -u)" != "0" ]]; then
+    if [[ "${EUID}" != "0" ]]; then
       error_msg "ERROR! You must execute the script as the 'root' user."
     fi
   } #}}}
   check_user() { #{{{
-    if [[ "$(id -u)" == "0" ]]; then
+    if [[ "${EUID}" == "0" ]]; then
       error_msg "ERROR! You must execute the script as a normal user."
     fi
   } #}}}
