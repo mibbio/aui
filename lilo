@@ -3789,8 +3789,8 @@ check_hostname
 check_connection
 check_pacman_blocked
 check_multilib
-pacman_key
 system_update
+pacman_key
 language_selector
 configure_sudo
 select_user
