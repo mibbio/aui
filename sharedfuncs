@@ -537,6 +537,9 @@
     done
   } #}}}
   system_update() { #{{{
+    #check if pacman db needs upgrade
+    pacman 2>&1 | grep -q "pacman-db-upgrade"
+    [[ $? -eq 0 ]] && pacman-db-upgrade    
     pacman -Syy
   } #}}}
   npm_install() { #{{{
